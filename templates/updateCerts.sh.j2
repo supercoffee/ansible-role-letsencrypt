@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+cd {{ letsencrypt_install_dir }}
+./letsencrypt-auto renew --webroot \
+{% for item in letsencrypt_domains %}
+    --webroot-path {{ item.webroot }} \
+{% endfor %}
+>> {{ letsencrypt_log_location }}

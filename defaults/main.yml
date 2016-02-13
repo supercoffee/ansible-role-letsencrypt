@@ -1,3 +1,10 @@
 ---
 
 letsencrypt_install_dir: /opt/letsencrypt
+letsencrypt_log_location: /var/log/letsencrypt/letsencrypt-update
+update_cert_script_location: "{{ letsencrypt_install_dir}}/updateCerts.sh"
+
+letsencrypt_domains: []
+#  - domain: www.example.com
+#    email: webmaster@example.com
+#    webroot: /var/www/html/www.example.com

@@ -8,10 +8,26 @@
   file: path="{{ letsencrypt_install_dir }}" state=directory
 
 - name: Clone git repository
-  git: repo=https://github.com/letsencrypt/letsencrypt dest="{{ letsencrypt_install_dir }}"
+  git: repo=https://github.com/letsencrypt/letsencrypt dest="{{ letsencrypt_install_dir }}" force=yes
 
 - name: Run standalone to acquire initial certs
-  command: "./letsencrypt-auto certonly --standalone --standalone-supported-challenges tls-sni-01 --agree-tos -m {{ domain_email }} -d {{ domain }}"
+  command: "./letsencrypt-auto certonly --standalone --standalone-supported-challenges tls-sni-01 --agree-tos -m {{ item.email }} -d {{ item.domain }}"
   args:
-    creates: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem"
+    creates: "/etc/letsencrypt/live/{{ item.domain }}/fullchain.pem"
     chdir: "{{ letsencrypt_install_dir }}"
+  with_items: letsencrypt_domains
+
+- name: Create letsencrypt autoupdate script
+  template:
+    src: updateCerts.sh.j2
+    dest: "{{ update_cert_script_location }}"
+    mode: 0700
+
+- name: Create cron entries to autoupdate certs
+  cron:
+    month: "1-12"
+    day: 1
+    hour: 2
+    job: "{{ update_cert_script_location }}"
+    state: present
+    name: "update_ssl_certs"
