@@ -16,18 +16,3 @@
     creates: "/etc/letsencrypt/live/{{ item.domain }}/fullchain.pem"
     chdir: "{{ letsencrypt_install_dir }}"
   with_items: letsencrypt_domains
-
-- name: Create letsencrypt autoupdate script
-  template:
-    src: updateCerts.sh.j2
-    dest: "{{ update_cert_script_location }}"
-    mode: 0700
-
-- name: Create cron entries to autoupdate certs
-  cron:
-    month: "1-12"
-    day: 1
-    hour: 2
-    job: "{{ update_cert_script_location }}"
-    state: present
-    name: "update_ssl_certs"
