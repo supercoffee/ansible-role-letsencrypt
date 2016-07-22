@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
 cd {{ letsencrypt_install_dir }}
-./letsencrypt-auto renew --webroot \
+if ! ./letsencrypt-auto renew --webroot \
 {% for item in letsencrypt_domains %}
     --webroot-path {{ item.webroot }} \
 {% endfor %}
->> {{ letsencrypt_log_location }}
+>> {{ letsencrypt_log_location }} 2>&1 ; then
+
+echo "`date` Certificate renewal failed!" >> {{ letsencrypt_log_location }}
+exit 1
+
+fi
+
+nginx -t && nginx -s reload
