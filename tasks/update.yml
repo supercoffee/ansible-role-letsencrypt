@@ -9,9 +9,8 @@
 
 - name: Create cron entries to autoupdate certs
   cron:
-    month: "1-12"
-    day: 1
     hour: 2
+    minute: 0
     job: "{{ update_cert_script_location }}"
     state: present
     name: "update_ssl_certs"
